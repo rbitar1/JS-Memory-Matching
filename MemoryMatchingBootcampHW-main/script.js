@@ -23,8 +23,19 @@ let lockBoard = false;
 */
 function initGame() {
     // Write your code here
+    let body = document.body;
+    resetBoard();
+    document.getElementById('game-board').innerHTML = '';
+    for(let i = 0; i < symbols.length; i++) {
+        cards.push(createCard(symbols[i]));
+        cards.push(createCard(symbols[i]));
+    }
+    shuffleArray(cards);
+    let gameBoard = document.getElementById('game-board');
+    for(let i = 0; i < cards.length; i++) {
+        gameBoard.appendChild(cards[i]);
+    }
 
-    document.getElementById('restart-btn').addEventListener('click', initGame);
 }
 
 /*
@@ -34,8 +45,13 @@ function initGame() {
 */
 function createCard(symbol) {
     // Write your code here
+    const card = document.createElement('div');
+    card.dataset.symbol = symbol;
+    card.classList.add('card');
+    card.textContent = '';
+    card.addEventListener('click', () =>flipCard(card)); //quickly creates function using lamda to not run right away
+    return card;
 }
-
 /*
     This function will handle all the logic for flipping the card. You can check if a variable doesn't
     have a value attached to it or is null by doing if (variable === null) {} or if (variable == null) {} or  if (!variable){}
@@ -48,7 +64,17 @@ function flipCard(card) {
     // If the board is supposed to be locked or you picked the same card you already picked
     if (lockBoard || card === firstCard) return;
     // Write your code here
+    card.classList.add('flipped');
+    card.textContent = card.dataset.symbol;
+    if (firstCard === null) {
+        firstCard = card;
+    }
+    else if (secondCard === null) { 
+        secondCard = card;
+        checkForMatch();
+    } 
 }
+
 
 /* 
     If there's a match between the first two cards that you picked, you want to take those cards out of the
@@ -57,6 +83,12 @@ function flipCard(card) {
 */
 function checkForMatch() {
     // Write your code here
+    if (firstCard.textContent === secondCard.textContent) {
+        disableCards();
+    }
+    else {
+        unflipCards();
+    }
 }
 
 /* 
@@ -66,6 +98,9 @@ function checkForMatch() {
 */
 function disableCards() {
     // Write your code here
+    firstCard.classList.add('matched');
+    secondCard.classList.add('matched');
+    resetBoard();
 }
  
 /* ---------------------  Everything under has already been done for you -------------------------- */
